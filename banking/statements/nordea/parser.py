@@ -1,4 +1,5 @@
 from ofxstatement.parser import CsvStatementParser
+from hashlib import md5
 import csv
 
 from . import TRANSACTION_TYPES
@@ -54,4 +55,8 @@ class NordeaCsvStatementParser(CsvStatementParser):
 
         # fill statement line according to mappings
         sl = super(NordeaCsvStatementParser, self).parse_record(line)
+
+        # generate a unique id by combining date, payee, amount and reference number
+        sl.id = md5(f"{line[0]}-{sl.payee}-{sl.amount}-{sl.refnum}".encode()).hexdigest()
+
         return sl
